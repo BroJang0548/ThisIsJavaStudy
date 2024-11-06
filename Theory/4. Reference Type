@@ -1,0 +1,236 @@
+# 🔄 참조 타입
+
+## 📊 데이터 타입 분류
+
+### 🔍 기본 타입과 참조 타입의 차이
+
+- 기본 타입: 값 자체를 저장
+- 참조 타입: 객체의 번지를 저장
+    - 배열, 열거, 클래스, 인터페이스가 해당
+
+### 💡 예시
+
+```java
+// 기본 타입 변수
+int age = 25;
+double price = 100.5;
+
+// 참조 타입 변수
+String name = "이름";
+String hobby = "독서";
+
+```
+
+## 🧠 메모리 사용 영역
+
+### 🏗️ JVM 메모리 영역 구분
+
+1. 메소드 영역
+    - 바이트코드 파일 내용 저장
+    - 클래스별 정적 필드, 메소드 코드, 생성자 코드 등
+2. 힙 영역
+    - 객체가 생성되는 영역
+    - 메소드 영역과 스택 영역에서 참조
+3. 스택 영역
+    - 메소드 호출할 때마다 생성되는 프레임 저장
+    - 메소드 호출 종료시 프레임 자동 제거
+    - 기본 타입 변수와 참조 타입 변수 생성
+
+## 🔍 참조 타입 변수의 ==, != 연산
+
+### ⚖️ 특징
+
+- 변수의 값(객체의 번지)을 비교
+- 동일 객체 참조 여부 확인 가능
+
+### 📝 예제 코드
+
+```java
+public class ReferenceVariableCompareExample {
+    public static void main(String[] args) {
+        int[] arr1;
+        int[] arr2;
+        int[] arr3;
+
+        arr1 = new int[] { 1, 2, 3 };
+        arr2 = new int[] { 1, 2, 3 };
+        arr3 = arr2;
+
+        System.out.println(arr1 == arr2);
+        System.out.println(arr2 == arr3);
+    }
+}
+
+```
+
+## ⚠️ null과 NullPointerException
+
+### 🚫 null의 개념
+
+- 참조 타입 변수가 객체를 참조하지 않는 상태를 의미
+- 스택 영역의 변수가 힙 영역의 객체를 참조하지 않음
+- null로 초기화된 참조 변수는 스택 영역에 생성됨
+
+### 🔄 null 값 비교
+
+```java
+String refVar1 = "Java";
+String refVar2 = null;
+
+// null 비교 결과
+refVar1 == null    // false
+refVar1 != null    // true
+refVar2 == null    // true
+refVar2 != null    // false
+
+```
+
+## 🗑️ Garbage Collection
+
+### 🔄 객체의 쓰레기화 조건
+
+```java
+// 1. 모든 참조 변수가 null이 되었을 때
+String hobby = "여행";
+hobby = null;    // "여행" 객체는 쓰레기가 됨
+
+// 2. 참조 변수에 새로운 객체를 대입했을 때
+String hobby = "여행";
+hobby = "영화";    // "여행" 객체는 쓰레기가 됨
+
+```
+
+## 📝 문자열(String) 타입
+
+### 🔨 문자열 생성 방법
+
+```java
+// 1. 문자열 리터럴로 생성
+String name1 = "홍길동";
+String name2 = "홍길동";  //같은 객체 참조
+
+// 2. new 연산자로 생성
+String name1 = new String("홍길동");
+String name2 = new String("홍길동");  //다른 객체 참조
+
+```
+
+### 🛠️ 주요 메소드
+
+```java
+// 1. charAt(int index)
+String ssn = "9506241230123";
+char sex = ssn.charAt(6);
+
+// 2. length()
+String ssn = "9506241230123";
+int length = ssn.length();
+
+// 3. replace()
+String oldStr = "자바 프로그래밍";
+String newStr = oldStr.replace("자바", "JAVA");
+
+// 4. substring()
+String ssn = "880815-1234567";
+String firstNum = ssn.substring(0, 6);
+
+```
+
+## 📊 배열(Array) 타입
+
+### 📌 배열의 특징
+
+1. 같은 타입의 값만 관리
+2. 배열의 길이는 고정 (늘리거나 줄일 수 없음)
+
+### 🔧 배열 생성 방법
+
+```java
+// 1. 값 목록으로 배열 생성
+String[] season = { "Spring", "Summer", "Fall", "Winter" };
+
+// 2. new 연산자로 배열 생성
+int[] scores = new int[30];    // 모든 요소 0으로 초기화
+
+```
+
+## 🔄 다차원 배열
+
+### 📊 2차원 배열 생성
+
+```java
+int[][] scores = {
+    { 80, 90, 96 },    // 첫 번째 반의 점수
+    { 76, 88 }         // 두 번째 반의 점수
+};
+
+```
+
+## 🔄 향상된 for문
+
+### 📝 예제
+
+```java
+public class AdvancedForExample {
+    public static void main(String[] args) {
+        int[] scores = { 95, 71, 84, 93, 87 };
+
+        int sum = 0;
+        for (int score : scores) {
+            sum = sum + score;
+        }
+        System.out.println("점수 총합 = " + sum);
+    }
+}
+
+```
+
+## 🎯 열거(Enum) 타입
+
+### 📋 열거 타입 선언
+
+```java
+public enum Week {
+    MONDAY,
+    TUESDAY,
+    WEDNESDAY,
+    THURSDAY,
+    FRIDAY,
+    SATURDAY,
+    SUNDAY
+}
+
+```
+
+### 🔄 열거 타입 변수 사용
+
+```java
+Week today = Week.SUNDAY;
+Week birthday = null;
+
+// 열거 상수 비교
+if(today == Week.SUNDAY) {
+    System.out.println("일요일입니다.");
+}
+
+```
+
+## ⚠️ 주의사항
+
+1. 🔍 null 값 검사
+
+```java
+if (str != null) {
+    System.out.println(str.length());
+}
+
+```
+
+1. 🗑️ 객체 제거
+- 자바는 객체를 직접 제거하는 방법을 제공하지 않음
+- 객체의 모든 참조를 없애는 것이 유일한 방법
+- Garbage Collector가 자동으로 제거
+1. 💾 메모리 관리
+- 불필요한 객체는 null 처리하여 메모리 최적화
+- 참조가 없는 객체는 자동으로 Garbage Collection 대상이 됨
+
