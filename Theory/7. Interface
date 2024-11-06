@@ -1,0 +1,1203 @@
+# 🎯 인터페이스
+
+## 인터페이스의 기본 개념과 역할
+
+## 1.1 인터페이스란?
+
+- **정의**: 두 장치를 연결하는 접속기의 역할을 하는 객체 간 연결 매개체
+- **목적**: 객체 간의 통신을 돕고 표준화된 방법으로 상호작용할 수 있게 함
+- **특징**: 다형성 구현의 주요 기술로 활용됨
+
+## 1.2 동작 방식
+
+```
+객체 A → 인터페이스 → 객체 B
+(호출)     (중계)     (실행)
+
+```
+
+## 1.3 사용의 장점
+
+1. **유연한 교체**:
+    - 구현 객체(B → C)가 교체되어도 사용 객체(A)의 코드 변경 불필요
+    - 인터페이스를 통한 간접적인 메소드 호출로 결합도 낮춤
+2. **다형성 구현**:
+    - 동일한 인터페이스로 다양한 구현 객체 사용 가능
+    - 실행 결과는 구현 객체에 따라 다르게 나타남
+
+## 인터페이스 선언과 구현
+
+## 2.1 기본 구조
+
+```java
+public interface 인터페이스명 {
+    // 구성 멤버
+    // 1. public 상수 필드
+    // 2. public 추상 메소드
+    // 3. public 디폴트 메소드
+    // 4. public 정적 메소드
+    // 5. private 메소드
+    // 6. private 정적 메소드
+}
+
+```
+
+## 2.2 선언 특징
+
+- 파일 형식: `.java`로 작성, `.class`로 컴파일
+- 접근 제한자: default 또는 public 사용
+- 키워드: `interface` 사용
+
+## 2.3 구현 클래스 선언
+
+```java
+public class 클래스명 implements 인터페이스명 {
+    // 인터페이스의 추상 메소드 재정의
+    @Override
+    public void 메소드명() {
+        // 실행 내용
+    }
+}
+
+```
+
+## 2.4 구현 객체 사용 예시
+
+```java
+// 인터페이스
+public interface RemoteControl {
+    public void turnOn();
+}
+
+// 구현 클래스
+public class Television implements RemoteControl {
+    @Override
+    public void turnOn() {
+        System.out.println("TV를 켭니다.");
+    }
+}
+
+// 사용 예
+RemoteControl rc;                // 인터페이스 변수 선언
+rc = new Television();          // 구현 객체 대입
+rc.turnOn();                    // 인터페이스를 통해 메소드 호출
+
+```
+
+## 인터페이스 멤버
+
+## 3.1 상수 필드
+
+- **특징**: public static final 특성을 가진 불변의 상수
+- **선언 방법**:
+    
+    ```java
+    [public static final] 타입 상수명 = 값;
+    
+    ```
+    
+- **명명 규칙**: 대문자로 작성, 복합어는 언더바(_)로 연결
+- **예시**:
+    
+    ```java
+    public interface RemoteControl {
+        int MAX_VOLUME = 10;      // public static final 자동 추가
+        int MIN_VOLUME = 0;
+    }
+    
+    ```
+    
+
+## 3.2 상수 필드 사용
+
+- 인터페이스로 바로 접근 가능
+- 구현 객체 없이도 사용 가능
+
+```java
+System.out.println("최대 볼륨: " + RemoteControl.MAX_VOLUME);
+System.out.println("최소 볼륨: " + RemoteControl.MIN_VOLUME);
+
+```
+
+## 인터페이스의 메소드 유형
+
+## 4.1 추상 메소드 (Abstract Method)
+
+- **정의**: 선언부만 있고 실행부가 없는 메소드
+- **특징**:
+    - 자동으로 public abstract 특성을 가짐
+    - 구현 클래스에서 반드시 재정의(오버라이딩) 필요
+
+### 선언 방법
+
+```java
+[public abstract] 리턴타입 메소드명(매개변수, ...);
+
+```
+
+### 예시
+
+```java
+public interface RemoteControl {
+    // 추상 메소드 선언
+    void turnOn();                      // public abstract 자동 추가
+    void turnOff();
+    void setVolume(int volume);
+}
+
+```
+
+### 구현 클래스에서의 재정의
+
+```java
+public class Television implements RemoteControl {
+    private int volume;
+
+    @Override
+    public void turnOn() {              // public 필수
+        System.out.println("TV를 켭니다.");
+    }
+
+    @Override
+    public void turnOff() {
+        System.out.println("TV를 끕니다.");
+    }
+
+    @Override
+    public void setVolume(int volume) {
+        if(volume > RemoteControl.MAX_VOLUME) {
+            this.volume = RemoteControl.MAX_VOLUME;
+        } else if(volume < RemoteControl.MIN_VOLUME) {
+            this.volume = RemoteControl.MIN_VOLUME;
+        } else {
+            this.volume = volume;
+        }
+        System.out.println("현재 TV 볼륨: " + this.volume);
+    }
+}
+
+```
+
+## 4.2 디폴트 메소드 (Default Method)
+
+- **정의**: 실행 코드가 있는 인터페이스의 인스턴스 메소드
+- **특징**:
+    - Java 8부터 추가된 기능
+    - 구현 객체가 필요한 메소드
+    - 구현 클래스에서 재정의 가능
+    - default 키워드 사용
+
+### 선언 방법
+
+```java
+[public] default 리턴타입 메소드명(매개변수, ...) {
+    // 실행문
+}
+
+```
+
+### 예시
+
+```java
+public interface RemoteControl {
+    // 디폴트 메소드
+    default void setMute(boolean mute) {
+        if(mute) {
+            System.out.println("무음 처리합니다.");
+            setVolume(MIN_VOLUME);
+        } else {
+            System.out.println("무음 해제합니다.");
+        }
+    }
+}
+
+```
+
+### 디폴트 메소드 재정의 예시
+
+```java
+public class Audio implements RemoteControl {
+    private int volume;
+    private int memoryVolume;    // 무음 처리 전 볼륨 저장
+
+    @Override
+    public void setMute(boolean mute) {
+        if(mute) {
+            this.memoryVolume = this.volume;
+            System.out.println("무음 처리합니다.");
+            setVolume(RemoteControl.MIN_VOLUME);
+        } else {
+            System.out.println("무음 해제합니다.");
+            setVolume(this.memoryVolume);    // 원래 볼륨으로 복원
+        }
+    }
+}
+
+```
+
+## 4.3 디폴트 메소드 사용
+
+```java
+public class RemoteControlExample {
+    public static void main(String[] args) {
+        RemoteControl rc;
+
+        rc = new Television();
+        rc.turnOn();
+        rc.setVolume(5);
+
+        // 디폴트 메소드 호출
+        rc.setMute(true);    // 무음 처리
+        rc.setMute(false);   // 무음 해제
+    }
+}
+
+```
+
+## 4.4 주의사항
+
+1. **디폴트 메소드 재정의 시**:
+    - public 접근 제한자 필수
+    - default 키워드 생략
+2. **추상 메소드 재정의 시**:
+    - public보다 더 낮은 접근 제한으로 재정의 불가
+    - 반드시 public 사용
+3. **이클립스 활용**:
+    - [Source] - [Override/Implement Methods] 메뉴 활용
+    - 자동으로 재정의할 메소드 생성 가능
+
+## 정적 메소드와 private 메소드
+
+## 5.1 정적(static) 메소드
+
+- **정의**: 구현 객체 없이 인터페이스만으로 호출 가능한 메소드
+- **특징**:
+    - Java 8부터 지원
+    - public 특성을 가짐
+    - 구현 객체 없이 인터페이스로 바로 호출
+
+### 선언 방법
+
+```java
+[public] static 리턴타입 메소드명(매개변수, ...) {
+    // 실행문
+}
+
+```
+
+### 예시
+
+```java
+public interface RemoteControl {
+    // 정적 메소드
+    static void changeBattery() {
+        System.out.println("리모컨 건전지를 교체합니다.");
+    }
+}
+
+```
+
+### 정적 메소드 사용
+
+```java
+public class RemoteControlExample {
+    public static void main(String[] args) {
+        // 정적 메소드 호출
+        RemoteControl.changeBattery();
+    }
+}
+
+```
+
+## 5.2 private 메소드
+
+- **정의**: 인터페이스 내부에서만 사용 가능한 메소드
+- **특징**:
+    - Java 9부터 지원
+    - 디폴트 메소드와 정적 메소드의 중복 코드 제거에 활용
+    - 외부에서 호출 불가능
+
+### private 메소드의 종류
+
+1. **인스턴스 private 메소드**
+    - 디폴트 메소드에서만 호출 가능
+2. **정적 private 메소드**
+    - 디폴트 메소드와 정적 메소드 모두에서 호출 가능
+
+### 선언 방법
+
+```java
+// 인스턴스 private 메소드
+private 리턴타입 메소드명(매개변수, ...) {
+    // 실행문
+}
+
+// 정적 private 메소드
+private static 리턴타입 메소드명(매개변수, ...) {
+    // 실행문
+}
+
+```
+
+### 활용 예시
+
+```java
+public interface RemoteControl {
+    // 상수
+    int MAX_VOLUME = 10;
+    int MIN_VOLUME = 0;
+
+    // private 메소드
+    private void log(String message) {
+        System.out.println("[" + LocalDateTime.now() + "] " + message);
+    }
+
+    // private 정적 메소드
+    private static void validate(int volume) {
+        if(volume < MIN_VOLUME || volume > MAX_VOLUME) {
+            throw new IllegalArgumentException("볼륨 값이 유효하지 않습니다.");
+        }
+    }
+
+    // 디폴트 메소드
+    default void setVolume(int volume) {
+        validate(volume);    // private 정적 메소드 호출
+        log("볼륨을 " + volume + "으로 설정합니다.");    // private 메소드 호출
+        // 볼륨 설정 로직
+    }
+
+    // 정적 메소드
+    static void checkVolume(int volume) {
+        validate(volume);    // private 정적 메소드 호출
+        System.out.println("볼륨 값이 유효합니다.");
+    }
+}
+
+```
+
+## 5.3 메소드 호출 제약사항
+
+| 메소드 종류 | 디폴트 메소드에서 호출 | 정적 메소드에서 호출 | 외부에서 호출 |
+| --- | --- | --- | --- |
+| 디폴트 메소드 | O | X | O |
+| 정적 메소드 | O | O | O |
+| private 메소드 | O | X | X |
+| private 정적 메소드 | O | O | X |
+
+## 5.4 사용 시 주의사항
+
+1. **private 메소드**:
+    - 구현 클래스에서 재정의 불가
+    - 인터페이스 내부에서만 사용
+2. **정적 메소드**:
+    - 구현 클래스에서 재정의 불가
+    - 인터페이스명으로만 호출 가능
+3. **메소드 조합**:
+    - 코드 재사용성을 높이기 위해 적절히 조합
+    - 중복 코드는 private 메소드로 분리
+
+## 인터페이스의 다중 구현
+
+## 6.1 다중 구현의 기본 개념
+
+- **정의**: 한 클래스가 여러 인터페이스를 동시에 구현하는 것
+- **특징**:
+    - 클래스 상속과 달리 다중 구현 가능
+    - 모든 추상 메소드를 재정의해야 함
+
+### 선언 방법
+
+```java
+public class 클래스명 implements 인터페이스A, 인터페이스B {
+    // 인터페이스 A, B의 모든 추상 메소드 재정의
+}
+
+```
+
+### 예시
+
+```java
+public interface RemoteControl {
+    void turnOn();
+    void turnOff();
+}
+
+public interface Searchable {
+    void search(String url);
+}
+
+public class SmartTelevision implements RemoteControl, Searchable {
+    @Override
+    public void turnOn() {
+        System.out.println("TV를 켭니다.");
+    }
+
+    @Override
+    public void turnOff() {
+        System.out.println("TV를 끕니다.");
+    }
+
+    @Override
+    public void search(String url) {
+        System.out.println(url + "을 검색합니다.");
+    }
+}
+
+```
+
+## 6.2 다중 구현 시 주의사항
+
+### 1. 메소드 충돌
+
+```java
+public interface InterfaceA {
+    void method();
+}
+
+public interface InterfaceB {
+    void method();    // 동일한 메소드 시그니처
+}
+
+public class MyClass implements InterfaceA, InterfaceB {
+    @Override
+    public void method() {    // 하나의 메소드로 두 인터페이스 요구사항 충족
+        System.out.println("method() 실행");
+    }
+}
+
+```
+
+### 2. 디폴트 메소드 충돌
+
+```java
+public interface InterfaceA {
+    default void method() {
+        System.out.println("InterfaceA의 method()");
+    }
+}
+
+public interface InterfaceB {
+    default void method() {
+        System.out.println("InterfaceB의 method()");
+    }
+}
+
+public class MyClass implements InterfaceA, InterfaceB {
+    @Override
+    public void method() {    // 충돌 발생 시 반드시 재정의
+        InterfaceA.super.method();    // 선택적으로 특정 인터페이스의 디폴트 메소드 호출
+        // 또는
+        // InterfaceB.super.method();
+    }
+}
+
+```
+
+## 인터페이스 상속
+
+## 1. 기본 개념
+
+- **특징**:
+    - 인터페이스 간 상속 가능
+    - 다중 상속 허용
+    - 하위 인터페이스는 상위 인터페이스의 모든 추상 메소드를 가짐
+
+### 선언 방법
+
+```java
+public interface 하위인터페이스 extends 상위인터페이스1, 상위인터페이스2 {
+    // 추가 추상 메소드
+}
+
+```
+
+### 예시
+
+```java
+public interface Vehicle {
+    void run();
+}
+
+public interface Flyable {
+    void fly();
+}
+
+public interface FlyingCar extends Vehicle, Flyable {
+    void park();
+}
+
+public class ModernCar implements FlyingCar {
+    @Override
+    public void run() {
+        System.out.println("도로를 달립니다.");
+    }
+
+    @Override
+    public void fly() {
+        System.out.println("하늘을 납니다.");
+    }
+
+    @Override
+    public void park() {
+        System.out.println("주차합니다.");
+    }
+}
+
+```
+
+## 2. 인터페이스 다형성
+
+### 1. 자동 타입 변환
+
+```java
+FlyingCar flyingCar = new ModernCar();    // 구현 클래스 타입
+Vehicle vehicle = flyingCar;               // 상위 인터페이스 타입
+Flyable flyable = flyingCar;               // 상위 인터페이스 타입
+
+```
+
+### 2. 강제 타입 변환
+
+```java
+Vehicle vehicle = new ModernCar();
+FlyingCar flyingCar = (FlyingCar) vehicle;    // 강제 타입 변환
+
+```
+
+### 3. instanceof 연산자 활용
+
+```java
+Vehicle vehicle = new ModernCar();
+
+if(vehicle instanceof FlyingCar) {
+    FlyingCar flyingCar = (FlyingCar) vehicle;
+    flyingCar.park();    // FlyingCar의 메소드 호출
+}
+
+```
+
+## 3. 다형성 구현
+
+```java
+public interface InterfaceA {
+    void methodA();
+}
+
+public interface InterfaceB {
+    void methodB();
+}
+
+public interface InterfaceC extends InterfaceA, InterfaceB {
+    void methodC();  // InterfaceA, B의 메소드도 모두 상속
+}
+
+public class ImplementClass implements InterfaceC {
+    // InterfaceA, B, C의 모든 추상 메소드를 구현해야 함
+    @Override
+    public void methodA() { }
+
+    @Override
+    public void methodB() { }
+
+    @Override
+    public void methodC() { }
+}
+
+// 다형성 예시
+ImplementClass impl = new ImplementClass();
+InterfaceA ia = impl;     // 부모 인터페이스로 자동 타입 변환
+ia.methodA();             // InterfaceA 메소드만 호출 가능
+
+InterfaceB ib = impl;     // 부모 인터페이스로 자동 타입 변환
+ib.methodB();             // InterfaceB 메소드만 호출 가능
+
+InterfaceC ic = impl;     // 모든 메소드 호출 가능
+ic.methodA();
+ic.methodB();
+ic.methodC();
+```
+
+## 봉인된 인터페이스 (Sealed Interface)
+
+## 1. 개념과 목적
+
+- Java 15에서 도입된 새로운 기능
+- 인터페이스 상속을 제한하여 무분별한 확장 방지
+- 허용된 자식 인터페이스만 상속 가능
+- 상속 구조를 명확하게 제어 가능
+
+## 2. 특징
+
+- **permits** 키워드로 구현 가능한 클래스 제한
+- 무분별한 구현 클래스 생성 방지
+- 상속 계층 제어 가능
+
+## 3. 선언 방법
+
+### 3.1 봉인된 인터페이스 선언
+
+```java
+public sealed interface InterfaceA permits InterfaceB {
+    void methodA();
+}
+
+```
+
+- `sealed` 키워드: 봉인을 선언
+- `permits` 키워드: 허용할 자식 인터페이스 명시
+
+### 3.2 자식 인터페이스 선언 옵션
+
+1. **non-sealed로 선언**
+
+```java
+public non-sealed interface InterfaceB extends InterfaceA {
+    void methodB();
+}
+
+```
+
+- 봉인 해제: 다른 인터페이스가 상속 가능
+1. **sealed로 선언**
+
+```java
+public sealed interface InterfaceB extends InterfaceA permits InterfaceC {
+    void methodB();
+}
+
+```
+
+- 다시 봉인: 지정된 인터페이스만 상속 가능
+
+## 4. 구현 예시
+
+```java
+// 봉인된 최상위 인터페이스
+public sealed interface InterfaceA permits InterfaceB {
+    void methodA();
+}
+
+// 봉인 해제된 중간 인터페이스
+public non-sealed interface InterfaceB extends InterfaceA {
+    void methodB();
+}
+
+// 일반 인터페이스 (InterfaceB를 상속)
+public interface InterfaceC extends InterfaceB {
+    void methodC();
+}
+
+// 구현 클래스
+public class ImplClass implements InterfaceC {
+    @Override
+    public void methodA() {
+        System.out.println("methodA() 실행");
+    }
+
+    @Override
+    public void methodB() {
+        System.out.println("methodB() 실행");
+    }
+
+    @Override
+    public void methodC() {
+        System.out.println("methodC() 실행");
+    }
+}
+
+```
+
+## 5. 특징과 제약사항
+
+1. **필수 키워드**
+    - sealed 인터페이스는 반드시 permits 절 필요
+    - 자식 인터페이스는 sealed, non-sealed 중 하나 선택
+2. **컴파일 시점 검사**
+    - 허용되지 않은 상속 시도 시 컴파일 에러
+    - 상속 구조의 안정성 보장
+3. **모듈/패키지 제한**
+    - 같은 모듈 또는 패키지 내에서만 permits 사용 가능
+    - 다른 모듈의 인터페이스는 permits 불가
+
+## 6. 사용 예시
+
+```java
+public class SealedExample {
+    public static void main(String[] args) {
+        ImplClass impl = new ImplClass();
+
+        // InterfaceA로 타입 변환
+        InterfaceA ia = impl;
+        ia.methodA();
+
+        // InterfaceB로 타입 변환
+        InterfaceB ib = impl;
+        ib.methodA();
+        ib.methodB();
+
+        // InterfaceC로 타입 변환
+        InterfaceC ic = impl;
+        ic.methodA();
+        ic.methodB();
+        ic.methodC();
+    }
+}
+
+```
+
+## 7. 장점
+
+1. 인터페이스 계층 구조 제어
+2. 타입 안정성 향상
+3. 설계 의도 명확한 표현
+4. 무분별한 확장 방지
+
+## 타입 변환
+
+## 10.1 자동 타입 변환 (Promotion)
+
+- **조건**:
+    1. 구현 클래스 → 인터페이스
+    2. 자식 클래스 → 부모 인터페이스
+- **특징**:
+    - 인터페이스 변수에 구현 객체를 대입할 때 발생
+    - 인터페이스에 선언된 메소드만 사용 가능
+
+```java
+Interface vehicle = new Bus();  // 자동 타입 변환
+vehicle.run();                 // 인터페이스의 메소드만 사용 가능
+
+```
+
+## 10.2 강제 타입 변환 (Casting)
+
+- **조건**: 인터페이스 → 구현 클래스
+- **용도**: 구현 클래스의 고유 메소드 사용 필요 시
+- **주의사항**:
+    - 구현 객체가 인터페이스 타입으로 변환된 상태여야 함
+    - instanceof 연산자로 확인 후 변환
+
+```java
+Vehicle vehicle = new Bus();           // 자동 타입 변환
+Bus bus = (Bus) vehicle;              // 강제 타입 변환
+bus.checkFare();                      // 구현 클래스의 메소드 사용
+
+```
+
+## 10.3 instanceof 연산자
+
+- **용도**: 객체가 특정 인터페이스 타입인지 확인
+- **Java 12 이전**:
+    
+    ```java
+    if(vehicle instanceof Bus) {
+        Bus bus = (Bus) vehicle;
+        bus.checkFare();
+    }
+    
+    ```
+    
+- **Java 12 이후**:
+    
+    ```java
+    if(vehicle instanceof Bus bus) {
+        bus.checkFare();    // 자동 타입 변환 변수 사용
+    }
+    
+    ```
+    
+
+## 인터페이스의 다형성
+
+## 1. 기본 개념
+
+- 하나의 인터페이스를 여러 클래스가 다양한 방식으로 구현
+- 인터페이스 타입의 변수로 구현 객체를 참조
+- 구현 객체를 교체하여 프로그램의 실행 결과를 다양화
+
+## 2. 다형성의 형태
+
+### 2.1 매개변수의 다형성
+
+```java
+public interface Vehicle {
+    void run();
+}
+
+public class Bus implements Vehicle {
+    @Override
+    public void run() {
+        System.out.println("버스가 달립니다.");
+    }
+}
+
+public class Taxi implements Vehicle {
+    @Override
+    public void run() {
+        System.out.println("택시가 달립니다.");
+    }
+}
+
+public class Driver {
+    public void drive(Vehicle vehicle) {  // 매개변수의 다형성
+        vehicle.run();
+    }
+}
+
+// 실행 예시
+Driver driver = new Driver();
+Bus bus = new Bus();
+Taxi taxi = new Taxi();
+
+driver.drive(bus);   // 버스가 달립니다.
+driver.drive(taxi);  // 택시가 달립니다.
+
+```
+
+### 2.2 필드의 다형성
+
+```java
+public class Car {
+    Tire frontLeftTire = new HankookTire();
+    Tire frontRightTire = new HankookTire();
+
+    void run() {
+        frontLeftTire.roll();
+        frontRightTire.roll();
+    }
+}
+
+// 실행 중 교체
+car.frontLeftTire = new KumhoTire();  // 다른 구현 객체로 교체
+
+```
+
+## 3. 다형성의 활용
+
+### 3.1 객체 배열을 통한 다형성
+
+```java
+Vehicle[] vehicles = {
+    new Bus(),
+    new Taxi(),
+    new Truck()
+};
+
+for(Vehicle vehicle : vehicles) {
+    vehicle.run();  // 각 구현 클래스의 run() 메소드 실행
+}
+
+```
+
+### 3.2 인터페이스 배열로 관리
+
+```java
+public class SoundableExample {
+    private static void printSound(Soundable[] soundables) {
+        for(Soundable soundable : soundables) {
+            System.out.println(soundable.sound());
+        }
+    }
+
+    public static void main(String[] args) {
+        Soundable[] soundables = {
+            new Cat(),
+            new Dog()
+        };
+        printSound(soundables);
+    }
+}
+
+```
+
+## 4. 다형성의 장점
+
+1. **유연성**: 구현 객체 교체가 용이
+2. **확장성**: 새로운 구현 클래스 추가 용이
+3. **결합도 감소**: 클래스 간 직접적인 의존 관계 감소
+4. **재사용성**: 인터페이스 기반 코드의 재사용 가능
+
+## 5. 실제 활용 예시
+
+```java
+// 데이터베이스 연결 인터페이스
+public interface DatabaseConnector {
+    void connect();
+    void disconnect();
+    void executeQuery(String query);
+}
+
+// MySQL 구현
+public class MySQLConnector implements DatabaseConnector {
+    @Override
+    public void connect() {
+        System.out.println("MySQL DB 연결");
+    }
+    // ... 나머지 구현
+}
+
+// Oracle 구현
+public class OracleConnector implements DatabaseConnector {
+    @Override
+    public void connect() {
+        System.out.println("Oracle DB 연결");
+    }
+    // ... 나머지 구현
+}
+
+// 데이터베이스 작업 클래스
+public class DatabaseService {
+    private DatabaseConnector connector;
+
+    public DatabaseService(DatabaseConnector connector) {
+        this.connector = connector;
+    }
+
+    public void processData() {
+        connector.connect();
+        connector.executeQuery("SELECT * FROM users");
+        connector.disconnect();
+    }
+}
+
+// 사용 예시
+DatabaseService service = new DatabaseService(new MySQLConnector());
+service.processData();
+
+// DB 변경 시
+service = new DatabaseService(new OracleConnector());
+service.processData();
+
+```
+
+## 인터페이스와 레코드 (JDK 16+)
+
+### 레코드 클래스의 인터페이스 구현
+
+```java
+public interface Printable {
+    String getFormattedString();
+}
+
+public record Person(String name, int age) implements Printable {
+    @Override
+    public String getFormattedString() {
+        return String.format("%s (%d세)", name, age);
+    }
+}
+
+```
+
+## 패턴 매칭과 인터페이스 (JDK 17)
+
+### 향상된 패턴 매칭
+
+```java
+public interface Shape {
+    double getArea();
+}
+
+public record Circle(double radius) implements Shape {
+    @Override
+    public double getArea() {
+        return Math.PI * radius * radius;
+    }
+}
+
+public record Rectangle(double width, double height) implements Shape {
+    @Override
+    public double getArea() {
+        return width * height;
+    }
+}
+
+// 패턴 매칭 사용
+public static String getShapeDescription(Shape shape) {
+    return switch (shape) {
+        case Circle c -> "원 (반지름: " + c.radius() + ")";
+        case Rectangle r -> "직사각형 (" + r.width() + "x" + r.height() + ")";
+        default -> "알 수 없는 도형";
+    };
+}
+
+```
+
+## 인터페이스와 모듈 시스템
+
+### 모듈 간 인터페이스 사용
+
+```java
+// module-info.java in module com.example.api
+module com.example.api {
+    exports com.example.api.interfaces;
+}
+
+// module-info.java in module com.example.impl
+module com.example.impl {
+    requires com.example.api;
+    provides com.example.api.interfaces.Service
+        with com.example.impl.ServiceImpl;
+}
+
+```
+
+## 함수형 인터페이스의 확장 (JDK 17)
+
+### 새로운 함수형 인터페이스 패턴
+
+```java
+@FunctionalInterface
+public interface AsyncProcessor<T, R> {
+    CompletableFuture<R> process(T input);
+
+    default AsyncProcessor<T, R> andThen(AsyncProcessor<R, ?> after) {
+        return input -> this.process(input)
+            .thenCompose(after::process);
+    }
+}
+
+```
+
+## 인터페이스와 봉인된 클래스의 조합
+
+### 봉인된 계층 구조
+
+```java
+public sealed interface Animal permits Cat, Dog {
+    void makeSound();
+}
+
+public final class Cat implements Animal {
+    @Override
+    public void makeSound() {
+        System.out.println("야옹");
+    }
+}
+
+public non-sealed class Dog implements Animal {
+    @Override
+    public void makeSound() {
+        System.out.println("멍멍");
+    }
+}
+
+```
+
+## 인터페이스와 가상 스레드 (JDK 17 Preview)
+
+### 가상 스레드와 인터페이스 활용
+
+```java
+public interface AsyncService {
+    CompletableFuture<String> processAsync();
+}
+
+public class VirtualThreadService implements AsyncService {
+    @Override
+    public CompletableFuture<String> processAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            // 가상 스레드에서 실행될 코드
+            return "처리 완료";
+        }, Executors.newVirtualThreadPerTaskExecutor());
+    }
+}
+
+```
+
+## 인터페이스 설계 패턴
+
+### 전략 패턴 (Strategy Pattern)
+
+```java
+public interface PaymentStrategy {
+    void pay(int amount);
+}
+
+public class CreditCardPayment implements PaymentStrategy {
+    @Override
+    public void pay(int amount) {
+        System.out.println("신용카드로 " + amount + "원 결제");
+    }
+}
+
+public class PayPalPayment implements PaymentStrategy {
+    @Override
+    public void pay(int amount) {
+        System.out.println("페이팔로 " + amount + "원 결제");
+    }
+}
+
+public class ShoppingCart {
+    private PaymentStrategy paymentStrategy;
+
+    public void setPaymentStrategy(PaymentStrategy strategy) {
+        this.paymentStrategy = strategy;
+    }
+
+    public void checkout(int amount) {
+        paymentStrategy.pay(amount);
+    }
+}
+
+```
+
+### 20.2 옵저버 패턴 (Observer Pattern)
+
+```java
+public interface Observer {
+    void update(String event);
+}
+
+public interface Subject {
+    void registerObserver(Observer observer);
+    void removeObserver(Observer observer);
+    void notifyObservers(String event);
+}
+
+public class NewsAgency implements Subject {
+    private List<Observer> observers = new ArrayList<>();
+
+    @Override
+    public void registerObserver(Observer observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(String event) {
+        for (Observer observer : observers) {
+            observer.update(event);
+        }
+    }
+}
+
+```
+
+## 인터페이스 테스트
+
+### 모의 객체(Mock) 활용
+
+```java
+public interface UserRepository {
+    User findById(Long id);
+    void save(User user);
+}
+
+@Test
+void testUserService() {
+    // Mock 생성
+    UserRepository mockRepository = mock(UserRepository.class);
+    when(mockRepository.findById(1L))
+        .thenReturn(new User("John"));
+
+    UserService service = new UserService(mockRepository);
+    User user = service.getUser(1L);
+
+    assertEquals("John", user.getName());
+}
+
+```
